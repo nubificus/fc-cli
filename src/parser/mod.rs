@@ -7,11 +7,14 @@ use std::{
     os::unix::io::IntoRawFd,
     sync::{mpsc::channel, Arc, Mutex},
     thread,
+    //   path::Path
 };
+
+//use firec::{config::{network::Interface, Config}};
 
 use anyhow::Result;
 
-pub use args::DBSArgs;
+pub use args::{DBSArgs, FCArgs};
 use dragonball::{api::v1::VmmService, Vmm};
 
 use crate::cli_instance::CliInstance;
@@ -21,7 +24,7 @@ pub mod args;
 const KVM_DEVICE: &str = "/dev/kvm";
 
 pub fn run_with_cli(args: DBSArgs) -> Result<i32> {
-    let mut cli_instance = CliInstance::new("dbs-cli");
+    let mut cli_instance = CliInstance::new("fc-cli");
 
     let kvm = OpenOptions::new().read(true).write(true).open(KVM_DEVICE)?;
 
@@ -60,3 +63,26 @@ pub fn run_with_cli(args: DBSArgs) -> Result<i32> {
         vmm_service,
     ))
 }
+/*
+pub fn run_with_fc_cli(args: FCArgs)->Config{
+    let iface = Interface::new("eth0", "tap0");
+
+    let config = Config::builder(None, Path::new(&args.boot_args.kernel_path))
+        .jailer_cfg()
+            .chroot_base_dir(Path::new("/srv"))
+            .exec_file(Path::new(&args.boot_args.kernel_path))
+            .jailer_binary(Path::new(&args.boot_args.kernel_path))
+            .build()
+        .kernel_args(&args.boot_args.boot_args)
+        .machine_cfg()
+            .vcpu_count(args.create_args.vcpu_count)
+            .mem_size_mib(args.create_args.mem_size_mib)
+            .build()
+        .add_drive("root", Path::new(&args.boot_args.rootfs_args.rootfs))
+            .is_root_device(args.boot_args.rootfs_args.is_root)
+            .build()
+        .add_network_interface(iface)
+        .socket_path(Path::new(&args.create_args.socket_path))
+        .build();
+    config
+}*/

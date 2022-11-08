@@ -24,6 +24,8 @@ slog = "2.7.0"
 slog-term = "2.9.0"
 slog-json = "2.6.1"
 slog-scope = "4.4.0"
+firec={ git = "https://github.com/nubificus/firec", branch="new_send_request" }
+tokio = {version = "1.18.1", features = ["process", "net", "fs", "rt", "time", "macros"]}
 
 [patch.'crates-io']
 dbs-device = { git = "https://github.com/openanolis/dragonball-sandbox.git", rev = "c3d7831aee7c3962b8a90f0afbfd0fb7e4d30323" }

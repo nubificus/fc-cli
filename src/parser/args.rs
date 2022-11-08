@@ -22,6 +22,98 @@ pub struct DBSArgs {
     pub log_level: String,
 }
 
+/// A simple command-line tool to start FC micro-VM
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+pub struct FCArgs {
+    #[clap(flatten)]
+    pub create_args: FCCreateArgs,
+
+    #[clap(flatten)]
+    pub boot_args: FCBootArgs,
+
+    #[clap(long, value_parser, default_value = "fc-cli.log", display_order = 1)]
+    pub log_file: String,
+
+    #[clap(long, value_parser, default_value = "Info", display_order = 1)]
+    pub log_level: String,
+}
+
+/// Configurations used for creating a VM.
+#[derive(Args, Debug, Deserialize, Serialize)]
+pub struct FCCreateArgs {
+    /// features of cpu
+    #[clap(
+        short = 'C',
+        long,
+        value_parser,
+        default_value_t = 2,
+        help = "The number of vcpu to start",
+        display_order = 1
+    )]
+    pub vcpu_count: usize,
+    #[clap(
+        short,
+        long,
+        value_parser,
+        default_value_t = 1024,
+        help = "The memory size in Mib",
+        display_order = 2
+    )]
+    pub mem_size_mib: i64,
+
+    // The serial path used to communicate with VM
+    #[clap(
+        short,
+        long,
+        value_parser,
+        default_value = "/tmp/fc.sock",
+        help = "Socket path",
+        display_order = 2
+    )]
+    pub socket_path: String,
+}
+
+/// Config boot source including rootfs file path
+#[derive(Args, Debug, Deserialize, Serialize)]
+#[clap(arg_required_else_help = true)]
+pub struct FCBootArgs {
+    #[clap(
+        short,
+        long,
+        value_parser,
+        help = "The path of kernel image ",
+        display_order = 1
+    )]
+    pub kernel_path: String,
+
+    #[clap(short, long, value_parser, help = "The path of fc", display_order = 2)]
+    pub fc_path: String,
+
+    #[clap(
+        short,
+        long,
+        value_parser,
+        help = "The path of jailer",
+        display_order = 3
+    )]
+    pub jailer_path: String,
+    // for kata_rootfs: 'root=/dev/vda1'
+    #[clap(
+        short,
+        long,
+        value_parser,
+        default_value = "console=ttyS0 reboot=k panic=1 pci=off random.trust_cpu=on",
+        help = "The boot arguments passed to the kernel (Optional)",
+        display_order = 4
+    )]
+    pub boot_args: String,
+
+    /// rootfs
+    #[clap(flatten)]
+    pub rootfs_args: RootfsArgs,
+}
+
 /// CPU related configurations
 #[derive(Args, Debug, Serialize, Deserialize)]
 pub struct CpuTopologyArgs {
