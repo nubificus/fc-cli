@@ -19,7 +19,7 @@ use vmm_sys_util::eventfd::EventFd;
 use dragonball::{
     api::v1::{
         BlockDeviceConfigInfo, BootSourceConfig, InstanceInfo, VmmAction, VmmActionError, VmmData,
-        VmmRequest, VmmResponse,
+        VmmRequest, VmmResponse,VsockDeviceConfigInfo,
     },
     vm::{CpuTopology, VmConfigInfo},
 };
@@ -117,6 +117,18 @@ impl CliInstance {
         self.insert_block_device(block_device_config_info)
             .expect("failed to set block device");
 
+	// set vsock config
+	let vsock_cfg = VsockDeviceConfigInfo {
+            id: String::from("root"),
+            guest_cid: 42,
+            uds_path: Some("/tmp/blah1".to_string().clone()),
+            ..Default::default()
+        };
+
+        // set vsock
+        self.insert_vsock(vsock_cfg)
+            .expect("failed to set boot source");
+
         // start micro-vm
         self.instance_start().expect("failed to start micro-vm");
 
@@ -150,6 +162,14 @@ impl CliInstance {
             vm_config.clone(),
         )))
         .with_context(|| format!("Failed to set vm configuration {:?}", vm_config))?;
+        Ok(())
+    }
+
+    pub fn insert_vsock(&self, vsock_cfg: VsockDeviceConfigInfo) -> Result<()> {
+        self.handle_request(Request::Sync(VmmAction::InsertVsockDevice(
+            vsock_cfg.clone(),
+        )))
+        .with_context(|| format!("Failed to insert vsock device {:?}", vsock_cfg))?;
         Ok(())
     }
 
