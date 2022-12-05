@@ -436,32 +436,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dbs-cli"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "dragonball",
- "firec",
- "hypervisor",
- "kvm-bindings",
- "kvm-ioctls",
- "libc",
- "log",
- "nix 0.24.2",
- "seccompiler",
- "serde",
- "serde_derive",
- "slog",
- "slog-json",
- "slog-scope",
- "slog-term",
- "thiserror",
- "tokio",
- "vmm-sys-util",
-]
-
-[[package]]
 name = "dbs-device"
 version = "0.1.0"
 source = "git+https://github.com/openanolis/dragonball-sandbox.git?rev=c3d7831aee7c3962b8a90f0afbfd0fb7e4d30323#c3d7831aee7c3962b8a90f0afbfd0fb7e4d30323"
@@ -687,9 +661,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "fc-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "dragonball",
+ "firec",
+ "hyperlocal",
+ "hypervisor",
+ "kvm-bindings",
+ "kvm-ioctls",
+ "libc",
+ "log",
+ "nix 0.24.2",
+ "seccompiler",
+ "serde",
+ "serde_derive",
+ "slog",
+ "slog-json",
+ "slog-scope",
+ "slog-term",
+ "thiserror",
+ "tokio",
+ "vmm-sys-util",
+]
+
+[[package]]
 name = "firec"
 version = "0.2.0"
-source = "git+https://github.com/nubificus/firec?branch=new_send_request#1ae07eb090e91211743737ffe2130ecaf586fd82"
+source = "git+https://github.com/nubificus/firec?branch=v2#e6ca2076d8d629208c754f6a8e688c7defc121ef"
 dependencies = [
  "derivative",
  "futures-util",

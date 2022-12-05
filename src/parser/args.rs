@@ -67,7 +67,7 @@ pub struct FCCreateArgs {
         short,
         long,
         value_parser,
-        default_value = "/tmp/fc.sock",
+        default_value = "/tmp/firecracker.socket",
         help = "Socket path",
         display_order = 2
     )]
@@ -87,17 +87,23 @@ pub struct FCBootArgs {
     )]
     pub kernel_path: String,
 
-    #[clap(short, long, value_parser, help = "The path of fc", display_order = 2)]
+    #[clap(
+        short, 
+        long, 
+        value_parser, 
+        default_value= "/usr/bin/firecracker",
+        help = "The path of fc", 
+        display_order = 2)]
     pub fc_path: String,
 
-    #[clap(
-        short,
-        long,
-        value_parser,
-        help = "The path of jailer",
-        display_order = 3
-    )]
-    pub jailer_path: String,
+//    #[clap(
+//        short,
+//        long,
+//        value_parser,
+//        help = "The path of jailer",
+//        display_order = 3
+//    )]
+//    pub jailer_path: String,
     // for kata_rootfs: 'root=/dev/vda1'
     #[clap(
         short,

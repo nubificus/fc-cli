@@ -6,9 +6,10 @@ use std::str::FromStr;
 use std::sync::Mutex;
 
 use firec::{
-    config::{network::Interface, Config}, //Drive, Jailer, Machine as MachineCfg
-    Machine,
+    Action,
+    FreeMachine,
 };
+use hyperlocal::Uri;
 use std::path::Path;
 use tokio::time::{sleep, Duration};
 
@@ -46,30 +47,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let _guard = set_global_logger(root);
     */
-    let iface = Interface::new("eth0", "tap0");
-
-    let config = Config::builder(None, Path::new(&args.boot_args.kernel_path))
-        .jailer_cfg()
-            .chroot_base_dir(Path::new("/srv"))
-            .exec_file(Path::new(&args.boot_args.fc_path))
-            .jailer_binary(Path::new(&args.boot_args.jailer_path))
-            .build()
-        .kernel_args(&args.boot_args.boot_args)
-        .machine_cfg()
-            .vcpu_count(args.create_args.vcpu_count)
-            .mem_size_mib(args.create_args.mem_size_mib)
-            .build()
-        .add_drive("root", Path::new(&args.boot_args.rootfs_args.rootfs))
-            .is_root_device(args.boot_args.rootfs_args.is_root)
-            .build()
-        .add_network_interface(iface)
-        .socket_path(Path::new(&args.create_args.socket_path))
-        .build();
-
-    let mut machine = Machine::create(config).await?;
+    let mut machine = FreeMachine::create_with_args(
+        Path::new(&args.boot_args.fc_path),
+        Path::new(&args.create_args.socket_path),
+        ).await?;
 
     machine.start().await?;
-    //sleep(Duration::from_secs(5)).await;
+
+    let url_kernel = Uri::new(machine.as_path(), "/boot-source").into();
+    let url_rootfs = Uri::new(machine.as_path(), "/drives/rootfs").into();
+    let body_kernel: String = "
+        {
+            \"kernel_image_path\":\"".to_string()+&args.boot_args.kernel_path+"\" ,
+            \"boot_args\": \"console=ttyS0 reboot=k panic=1 pci=off\"
+        }";
+    let body_rootfs: String = "
+        {
+            \"drive_id\": \"rootfs\",
+            \"path_on_host\": \"".to_string()+&args.boot_args.rootfs_args.rootfs+"\",
+            \"is_root_device\": true,
+            \"is_read_only\": false
+        }";
+
+    while !machine.as_path().exists() {}
+
+    machine.send_request(url_kernel, body_kernel).await?;
+    machine.send_request(url_rootfs, body_rootfs).await?;
+
+    machine.send_action(Action::InstanceStart).await?;
+
+    //it
+    //should
+    //be
+    //sleep
+    //tbh
+
+    sleep(Duration::from_secs(500)).await;
     //machine.force_shutdown().await?;
 
     //run_with_cli(args)?;

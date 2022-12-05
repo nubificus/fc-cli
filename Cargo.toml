@@ -1,5 +1,5 @@
 [package]
-name = "dbs-cli"
+name = "fc-cli"
 version = "0.1.0"
 edition = "2021"
 
@@ -24,7 +24,8 @@ slog = "2.7.0"
 slog-term = "2.9.0"
 slog-json = "2.6.1"
 slog-scope = "4.4.0"
-firec={ git = "https://github.com/nubificus/firec", branch="new_send_request" }
+firec={ git = "https://github.com/nubificus/firec", branch="v2" }
+hyperlocal = "0.8.0"
 tokio = {version = "1.18.1", features = ["process", "net", "fs", "rt", "time", "macros"]}
 
 [patch.'crates-io']
